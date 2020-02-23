@@ -1,0 +1,13 @@
+{
+    "service_strategies": [
+        {
+            "service": "Second",
+            "type": "ratelimiting",
+            "param": 50
+        }
+    ],
+    "default_strategy": {
+        "type": "ratelimiting",
+        "param": 100
+    }
+}

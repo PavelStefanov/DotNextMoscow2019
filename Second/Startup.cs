@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Jaeger;
+using Jaeger.Reporters;
 using Jaeger.Samplers;
+using Jaeger.Senders;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -39,8 +41,19 @@ namespace Second
             {
                 string serviceName = serviceProvider.GetRequiredService<IHostEnvironment>().ApplicationName;
 
+            //   var reporter = new RemoteReporter.Builder()
+            //         .WithSender(new HttpSender("http://localhost:14268/api/traces"))
+            //         .Build();
+
+            //     var sampler = new RemoteControlledSampler.Builder(serviceName)
+            //         .WithInitialSampler(new ConstSampler(false))
+            //         .WithSamplingManager(new HttpSamplingManager("localhost:5778"))
+            //         .Build();
+
                 // This will log to a default localhost installation of Jaeger.
                 var tracer = new Tracer.Builder(serviceName)
+                    // .WithSampler(sampler)
+                    // .WithReporter(reporter)
                     .WithSampler(new ConstSampler(true))
                     .Build();
 

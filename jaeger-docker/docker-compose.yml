@@ -22,25 +22,38 @@ services:
       - "14269:14269"
     environment:
       - SPAN_STORAGE_TYPE=elasticsearch
+      - ES_SERVER_URLS=http://elasticsearch:9200
     command: [
-      "--es.server-urls=http://elasticsearch:9200"
+      "--sampling.strategies-file=/usr/strategies.json"
     ]
+    volumes: 
+      - ./strategies.json:/usr/strategies.json
     restart: on-failure
     networks:
       - elastic-jaeger
     depends_on:
       - elasticsearch
 
-  jaeger-query:
-    image: jaegertracing/jaeger-query:1.16
+  jaeger-agent:
+    image: jaegertracing/jaeger-agent:1.16
+    ports:
+    - "5778:5778"
     environment:
       - SPAN_STORAGE_TYPE=elasticsearch
+      - COLLECTOR_HOST_PORT=jaeger-collector:14267
+    restart: on-failure
+    networks:
+      - elastic-jaeger
+    depends_on:
+      - jaeger-collector
+
+  jaeger-query:
+    image: jaegertracing/jaeger-query:1.16
     ports:
       - "16686:16686"
-    command: [
-      "--es.server-urls=http://elasticsearch:9200",
-      "--span-storage.type=elasticsearch"
-    ]
+    environment:
+      - SPAN_STORAGE_TYPE=elasticsearch
+      - ES_SERVER_URLS=http://elasticsearch:9200
     restart: on-failure
     networks:
       - elastic-jaeger
